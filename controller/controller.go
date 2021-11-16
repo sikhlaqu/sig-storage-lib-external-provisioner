@@ -771,6 +771,7 @@ func getObjectUID(obj interface{}) (string, error) {
 
 // enqueueClaim takes an obj and converts it into UID that is then put onto claim work queue.
 func (ctrl *ProvisionController) enqueueClaim(obj interface{}) {
+	klog.Warningf("enqueueClaim is called ========> %v", obj)
 	uid, err := getObjectUID(obj)
 	if err != nil {
 		utilruntime.HandleError(err)
@@ -782,6 +783,7 @@ func (ctrl *ProvisionController) enqueueClaim(obj interface{}) {
 // enqueueVolume takes an obj and converts it into a namespace/name string which
 // is then put onto the given work queue.
 func (ctrl *ProvisionController) enqueueVolume(obj interface{}) {
+	klog.Warningf("enqueueVolume is called ========> %v", obj)
 	var key string
 	var err error
 	if key, err = cache.DeletionHandlingMetaNamespaceKeyFunc(obj); err != nil {
@@ -794,6 +796,7 @@ func (ctrl *ProvisionController) enqueueVolume(obj interface{}) {
 // forgetVolume Forgets an obj from the given work queue, telling the queue to
 // stop tracking its retries because e.g. the obj was deleted
 func (ctrl *ProvisionController) forgetVolume(obj interface{}) {
+	klog.Warningf("forgetVolume is called ========> %v", obj)
 	var key string
 	var err error
 	if key, err = cache.DeletionHandlingMetaNamespaceKeyFunc(obj); err != nil {
@@ -897,6 +900,7 @@ func (ctrl *ProvisionController) Run(ctx context.Context) {
 
 func (ctrl *ProvisionController) runClaimWorker(ctx context.Context) {
 	for ctrl.processNextClaimWorkItem(ctx) {
+		klog.Warningf("runClaimWorker is called ========>")
 	}
 }
 
@@ -907,6 +911,7 @@ func (ctrl *ProvisionController) runVolumeWorker(ctx context.Context) {
 
 // processNextClaimWorkItem processes items from claimQueue
 func (ctrl *ProvisionController) processNextClaimWorkItem(ctx context.Context) bool {
+	klog.Warningf("processNextClaimWorkItem is called ========>")
 	obj, shutdown := ctrl.claimQueue.Get()
 
 	if shutdown {
@@ -1012,6 +1017,7 @@ func (ctrl *ProvisionController) processNextVolumeWorkItem(ctx context.Context) 
 
 // syncClaimHandler gets the claim from informer's cache then calls syncClaim. A non-nil error triggers requeuing of the claim.
 func (ctrl *ProvisionController) syncClaimHandler(ctx context.Context, key string) error {
+	klog.Warningf("syncClaimHandler is called ========> %v", key)
 	objs, err := ctrl.claimsIndexer.ByIndex(uidIndex, key)
 	if err != nil {
 		return err
@@ -1047,6 +1053,7 @@ func (ctrl *ProvisionController) syncVolumeHandler(ctx context.Context, key stri
 // syncClaim checks if the claim should have a volume provisioned for it and
 // provisions one if so. Returns an error if the claim is to be requeued.
 func (ctrl *ProvisionController) syncClaim(ctx context.Context, obj interface{}) error {
+	klog.Warningf("syncClaim is called ========> %v", obj)
 	claim, ok := obj.(*v1.PersistentVolumeClaim)
 	if !ok {
 		return fmt.Errorf("expected claim but got %+v", obj)
